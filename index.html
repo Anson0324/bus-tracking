@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Live Bus Tracker</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <!-- Google Maps API -->
+  <script 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDh0jTnIUaskV0ssJVN6t_utUpoeK4CyGU&callback=initMap" 
+    async defer>
+  </script>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      databaseURL: "https://gps-tracker-9c888-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    let map;
+    let markers = {}; // Store bus markers
+
+    // Initialize the map
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 36.9914, lng: -122.0609 }, // Default center
+        zoom: 15
+      });
+
+      // Listen for new and updated bus locations
+      const locationRef = firebase.database().ref("locations");
+
+      locationRef.on("child_added", updateBusLocation);
+      locationRef.on("child_changed", updateBusLocation);
+    }
+
+    function updateBusLocation(snapshot) {
+      let data = snapshot.val();
+      let busId = snapshot.key; // Get the unique bus ID
+
+      if (data) {
+        let lat = parseFloat(data.lat);
+        let lng = parseFloat(data.lng);
+
+        if (!markers[busId]) {
+          // Create a new marker
+          markers[busId] = new google.maps.Marker({
+            position: { lat, lng },
+            map: map,
+            title: "Bus ID: " + busId,  // 🛠 Add tooltip on hover
+            icon: {
+              url: "https://maps.google.com/mapfiles/ms/icons/bus.png",
+              scaledSize: new google.maps.Size(30, 30)
+            }
+          });
+
+          // Add info window when clicking on the bus marker
+          let infoWindow = new google.maps.InfoWindow({
+            content: `<strong>Bus ID:</strong> ${busId}`
+          });
+
+          markers[busId].addListener("mouseover", () => {
+            infoWindow.open(map, markers[busId]);
+          });
+
+          markers[busId].addListener("mouseout", () => {
+            infoWindow.close();
+          });
+
+        } else {
+          // Update marker position
+          markers[busId].setPosition({ lat, lng });
+        }
+      }
+    }
+
+
+  </script>
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+</body>
+</html>
