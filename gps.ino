@@ -47,30 +47,32 @@ float convertNmeaToDecimal(String coordinate, String direction) {
 
 // Function to connect to WiFi with retries
 void connectToWiFi() {
-  WiFi.disconnect(true);
-  delay(1000);
-  WiFi.begin(ssid, password);
-  
-  Serial.print("Connecting to WiFi");
-  int attempts = 0;
-  
-  while (WiFi.status() != WL_CONNECTED && attempts < 20) {  // Try for 10 seconds
-    delay(500);
-    Serial.print(".");
-    attempts++;
-  }
+    WiFi.disconnect(true);
+    delay(1000);
+    WiFi.begin(ssid, password);
+    WiFi.setAutoReconnect(true);
+    WiFi.persistent(true);
 
-  Serial.println();
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("WiFi connected!");
-    Serial.print("IP address: ");
+    Serial.print("Connecting to WiFi");
+    int attempts = 0;
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+        attempts++;
+
+        // If WiFi fails for 30 seconds, restart ESP32
+        if (attempts > 60) {
+            Serial.println("\nFailed to connect to WiFi! Restarting ESP32...");
+            ESP.restart();
+        }
+    }
+
+    Serial.println("\nWiFi connected!");
+    Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
-  } else {
-    Serial.println("WiFi Connection Failed! Check credentials and hotspot.");
-    Serial.print("WiFi Status Code: ");
-    Serial.println(WiFi.status());
-  }
 }
+
 
 void setup() {
   Serial.begin(115200);
@@ -123,8 +125,9 @@ void loop() {
 
       // Check if WiFi is still connected
       if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("Reconnecting WiFi...");
-        connectToWiFi();
+        Serial.println("WiFi lost, attempting to reconnect...");
+        WiFi.reconnect();  // Attempt reconnect
+        delay(2000); // Wait before retrying
       }
 
       if (WiFi.status() == WL_CONNECTED) {
