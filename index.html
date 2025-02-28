@@ -26,11 +26,12 @@
 
     // Initialize the map using Leaflet
     function initMap() {
-      map = L.map('map').setView([36.9914, -122.0609], 15); // Default view
+      map = L.map('map').setView([36.9885, -122.0609], 15); // Default view
 
       // Load and display OpenStreetMap tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+      L.tileLayer('https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: 'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
       // Listen for new and updated bus locations
