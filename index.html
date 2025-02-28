@@ -51,8 +51,8 @@
           // Create a new marker with a popup
           let marker = L.marker([lat, lng], {
             icon: L.icon({
-              iconUrl: "https://maps.google.com/mapfiles/ms/icons/bus.png",
-              iconSize: [30, 30]
+              iconUrl: "bus.png",
+              iconSize: [30, 30] //adjust bus size
             })
           }).addTo(map)
             .bindPopup(`<strong>Bus ID:</strong> ${busId}`);
