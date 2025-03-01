@@ -48,6 +48,7 @@
       if (data) {
         let lat = parseFloat(data.lat);
         let lng = parseFloat(data.lng);
+        let timestamp = data.timestamp || "N/A"; // Get timestamp if available
 
         if (!markers[busId]) {
           // Create a new marker with a popup
@@ -57,13 +58,13 @@
               iconSize: [30, 30] //adjust bus size
             })
           }).addTo(map)
-            .bindPopup(`<strong>Bus ID:</strong> ${busId}`);
+            .bindPopup(`<strong>Bus ID:</strong> ${busId}<br><strong>Last Updated:</strong> ${timestamp}`);
 
           markers[busId] = marker;
         } else {
           // Update marker position
           markers[busId].setLatLng([lat, lng])
-            .bindPopup(`<strong>Bus ID:</strong> ${busId}`); // Update popup content
+            .bindPopup(`<strong>Bus ID:</strong> ${busId}<br><strong>Last Updated:</strong> ${timestamp}`); // Update popup content
         }
       }
     }
