@@ -12,7 +12,7 @@ HardwareSerial GPS_Serial(1);
 #define BAUD_RATE 9600
 
 // Bus ID
-String busID = "bus2";
+String busID = "bus01";
 
 //Timezone
 Timezone myTZ;
